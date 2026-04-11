@@ -66,7 +66,7 @@ const TakeTest = ({ user }) => {
     fetchTest()
   }, [testId, navigate])
 
-  // Time tracking
+  
   useEffect(() => {
     if (!test || isSubmitted) return
     let interval
@@ -261,7 +261,7 @@ const TakeTest = ({ user }) => {
                     )}
                   </>
                 ) : (
-                  // MCQ logic (unchanged)
+                  
                   <div className="space-y-4 max-w-2xl">
                     {/* ... MCQ options ... */}
                   </div>

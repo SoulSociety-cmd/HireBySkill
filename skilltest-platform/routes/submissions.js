@@ -6,7 +6,6 @@ const SandboxRunner = require('../utils/sandboxRunner');
 const { auth } = require('../middleware/auth');
 const router = express.Router();
 
-// Existing general submission (MCQ + legacy)
 router.post('/', auth, async (req, res) => {
   try {
     const { test: testId, answers } = req.body;
@@ -17,12 +16,11 @@ router.post('/', auth, async (req, res) => {
       test: testId,
       student: req.user._id,
       answers,
-      status: 'graded', // Auto-grade MCQ
+      status: 'graded', 
       startedAt: new Date(),
       completedAt: new Date()
     });
 
-    // Grade MCQ
     const mcqGrade = AIGrader.gradeMCQ(answers, test.questions);
     submission.totalScore = mcqGrade.score;
     submission.aiFeedback = mcqGrade.feedback;
@@ -34,7 +32,6 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// NEW: Code Challenge Submission + Auto-grading
 router.post('/code', auth, async (req, res) => {
   try {
     const { testId, questionId, code } = req.body;
@@ -61,11 +58,10 @@ router.post('/code', auth, async (req, res) => {
 
     await submission.save();
 
-    // Async grading via socket room
+    
     const room = `grading-${submission._id}`;
     req.io.to(room).emit('grade:started', { submissionId: submission._id });
 
-    // Run sandbox → AI grade (fire and forget for real-time)
     (async () => {
       try {
         const gradeResult = await AIGrader.gradeCoding(submission, question, req.io, room);
@@ -116,7 +112,6 @@ router.get('/:id', auth, async (req, res) => {
     
     if (!submission) return res.status(404).json({ error: 'Submission not found' });
     
-    // Auto-upgrade legacy if needed
     if (submission.status === 'pending') {
       submission.status = 'failed';
       submission.aiFeedback = 'Legacy grading deprecated. Use /code endpoint.';
