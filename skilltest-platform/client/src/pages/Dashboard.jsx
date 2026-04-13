@@ -9,7 +9,7 @@ import {
   AcademicCapIcon,
   ChartBarIcon,
   UsersIcon,
-  TrendingUpIcon 
+  ArrowTrendingUpIcon 
 } from '@heroicons/react/24/outline'
 
 const Dashboard = () => {
