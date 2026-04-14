@@ -13,7 +13,12 @@ import {
 
 let socket = null
 
+const TOTAL_TIME = 900; // 15 minutes
+
 const TakeTest = ({ user }) => {
+  const [draftCode, setDraftCode] = useState('');
+  const [syncedTime, setSyncedTime] = useState(TOTAL_TIME);
+  const [scorePreview, setScorePreview] = useState(0);
   const { testId } = useParams()
   const navigate = useNavigate()
   const [test, setTest] = useState(null)
@@ -49,15 +54,34 @@ const TakeTest = ({ user }) => {
       toast.error(`Grading error: ${error}`)
     })
 
+    socket.on('timer:sync', (timeLeft) => {
+      setTimeLeft(timeLeft);
+      setSyncedTime(timeLeft);
+    });
+
     return () => socket?.disconnect()
   }, [])
+
+  useEffect(() => {
+    if (testId && socket) {
+      socket.emit('timer:start', testId);
+    }
+  }, [testId, test]);
 
   useEffect(() => {
     const fetchTest = async () => {
       try {
         const res = await api.get(`/tests/${testId}`)
         setTest(res.data)
-        setTimeLeft(res.data.duration)
+        setTimeLeft(TOTAL_TIME);
+        setSyncedTime(TOTAL_TIME);
+        
+        // Load draft
+        const savedDraft = localStorage.getItem(`draft_${testId}`);
+        if (savedDraft) {
+          setDraftCode(savedDraft);
+          setAnswers(prev => ({ ...prev, [0]: savedDraft }));
+        }
       } catch (error) {
         toast.error('Test not found')
         navigate('/dashboard')
@@ -130,7 +154,14 @@ const TakeTest = ({ user }) => {
 
   const handleAnswerChange = (questionIndex, answer) => {
     setAnswers(prev => ({ ...prev, [questionIndex]: answer }))
-    setCodeResults(null) // Reset results
+    setDraftCode(answer);
+    setCodeResults(null);
+    
+    // Auto-save draft
+    const saveDraft = setTimeout(() => {
+      localStorage.setItem(`draft_${testId}`, answer);
+    }, 1000);
+    return () => clearTimeout(saveDraft);
   }
 
   const handleSubmit = async () => {
@@ -160,26 +191,25 @@ const TakeTest = ({ user }) => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {!isSubmitted ? (
         <>
-          {/* Header */}
-          <div className="bg-white/80 backdrop-blur-xl border-b border-white/50 shadow-lg sticky top-0 z-50">
-            <div className="max-w-6xl mx-auto px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4 text-sm">
-                  <span className="font-mono bg-primary-100 px-3 py-1 rounded-xl text-primary-800 font-bold">
-                    Q {currentQuestion + 1} / {test.questions.length}
-                  </span>
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <ClockIcon className="w-5 h-5" />
-                    <span className="font-mono font-bold text-lg">{formatTime(timeLeft)}</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  {questionAnswered && <CheckCircleIcon className="w-7 h-7 text-emerald-500" />}
-                </div>
-              </div>
-            </div>
+  {/* Header: [Timer 15:00] [Score Preview] */}
+  <div className="bg-white/80 backdrop-blur-xl border-b border-white/50 shadow-lg sticky top-0 z-50">
+    <div className="max-w-6xl mx-auto px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <ClockIcon className="w-6 h-6 text-red-500" />
+            <span className="font-mono text-2xl font-bold text-gray-900">{formatTime(timeLeft || TOTAL_TIME)}</span>
           </div>
+          <div className="flex items-center space-x-2 text-lg font-semibold text-emerald-600">
+            Score Preview: {scorePreview}%
+          </div>
+        </div>
+        <span className="font-mono bg-primary-100 px-3 py-1 rounded-xl text-primary-800 font-bold">
+          Q {currentQuestion + 1} / {test.questions.length}
+        </span>
+      </div>
+    </div>
+  </div>
 
           {/* Main Content */}
           <div className="max-w-6xl mx-auto px-6 py-12">
@@ -187,11 +217,23 @@ const TakeTest = ({ user }) => {
               
               {/* Question */}
               <div className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-3">
-                  <span>{currentQuestion + 1}.</span>
-                  <CodeBracketIcon className="w-8 h-8 text-primary-600" />
-                  <span>{question?.question}</span>
-                </h2>
+                {/* Test Description */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border-l-8 border-blue-500 mb-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">{question?.question}</h3>
+                  <div className="space-y-4">
+                    {question.testCases?.map((tc, i) => (
+                      <div key={i} className="p-4 bg-white rounded-xl shadow-sm">
+                        <div className="font-semibold mb-2">Test Case {i+1}</div>
+                        <div className="text-sm">
+                          <strong>Input:</strong> <code className="bg-gray-100 px-2 py-1 rounded">{tc.input}</code>
+                        </div>
+                        <div className="text-sm mt-2">
+                          <strong>Expected Output:</strong> <code className="bg-emerald-100 px-2 py-1 rounded text-emerald-800">{tc.expectedOutput}</code>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
                 {isCoding ? (
                   <>
