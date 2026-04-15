@@ -6,11 +6,16 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token, req }) => {
+        if (req.nextUrl.pathname.startsWith('/company')) {
+          return !!(token && token.role === 'company');
+        }
+        return !!token;
+      },
     },
   }
 )
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/test/:path*', '/results/:path*']
+  matcher: ['/dashboard/:path*', '/company/:path*', '/test/:path*', '/results/:path*']
 }

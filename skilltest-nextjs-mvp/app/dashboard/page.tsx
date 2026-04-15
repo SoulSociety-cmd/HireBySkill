@@ -18,6 +18,11 @@ export default function Dashboard() {
     return null
   }
 
+  if (session.user?.role === 'company') {
+    router.push('/company/dashboard')
+    return null
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-24">
       <div className="text-center mb-20">
