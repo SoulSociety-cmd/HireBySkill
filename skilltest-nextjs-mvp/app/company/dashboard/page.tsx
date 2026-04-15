@@ -125,7 +125,7 @@ export default function CompanyDashboard() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-8 mb-12">
         <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border">
           <h3 className="text-2xl font-bold mb-6 flex items-center space-x-2">
             <TrendingUp className="w-6 h-6" />
@@ -137,6 +137,41 @@ export default function CompanyDashboard() {
         <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border">
           <h3 className="text-2xl font-bold mb-6">Score Distribution</h3>
           <Doughnut data={scoreChartData} options={options} />
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 backdrop-blur-xl rounded-3xl p-12 shadow-2xl border border-emerald-200/50">
+        <h2 className="text-3xl font-black mb-8 flex items-center justify-center space-x-3 text-emerald-900">
+          🎯 Top 3 Smart Matches
+        </h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[1,2,3].map(i => (
+            <div key={i} className="bg-white/80 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all border border-emerald-200 hover:-translate-y-2">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-emerald-400 to-green-500 rounded-2xl flex items-center justify-center font-bold text-white text-xl shadow-lg">
+                  #{i}
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg">John Doe</h4>
+                  <p className="text-emerald-600 font-semibold text-xl">92 SkillFit</p>
+                </div>
+              </div>
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center">
+                  <div className="w-24 bg-gray-200 rounded-full h-2 mr-3">
+                    <div className="bg-emerald-500 h-2 rounded-full" style={{width: '92%'}} />
+                  </div>
+                  <span className="font-mono text-sm text-gray-600">React: 89</span>
+                </div>
+                <div className="flex items-center text-xs text-gray-500">
+                  <span>2 tests • JS Expert • Remote OK</span>
+                </div>
+              </div>
+              <Button className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 font-bold">
+                Hire Now →
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
     </div>

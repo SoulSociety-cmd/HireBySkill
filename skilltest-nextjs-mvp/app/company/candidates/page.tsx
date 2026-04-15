@@ -5,13 +5,31 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Users, Mail, Filter, Search } from 'lucide-react'
 
-const candidates = [
-  { name: 'John Doe', skill: 'React', score: 92, status: 'hired', email: 'john@example.com' },
-  { name: 'Jane Smith', skill: 'Node.js', score: 85, status: 'invited', email: 'jane@example.com' },
-  { name: 'Bob Johnson', skill: 'Fullstack', score: 78, status: 'contacted', email: 'bob@example.com' },
-  { name: 'Alice Brown', skill: 'React', score: 95, status: 'hired', email: 'alice@example.com' },
-  { name: 'Charlie Wilson', skill: 'Python', score: 88, status: 'invited', email: 'charlie@example.com' },
-]
+const [candidates, setCandidates] = useState([])
+const [loading, setLoading] = useState(true)
+const [jobId, setJobId] = useState('')
+const [filters, setFilters] = useState({ minFit: 70, location: '', avail: '' })
+
+useEffect(() => {
+  fetchMatches()
+}, [jobId, filters])
+
+async function fetchMatches() {
+  try {
+    const params = new URLSearchParams({
+      companyId: session?.user.id!,
+      ...(jobId && { jobId }),
+      minFit: filters.minFit.toString()
+    })
+    const res = await fetch(`/api/company/matches?${params}`)
+    const data = await res.json()
+    setCandidates(data)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    setLoading(false)
+  }
+}
 
 export default function Candidates() {
   return (

@@ -13,7 +13,7 @@ import {
 
 let socket = null
 
-const TOTAL_TIME = 900; // 15 minutes
+const TOTAL_TIME = 900; 
 
 const TakeTest = ({ user }) => {
   const [draftCode, setDraftCode] = useState('');

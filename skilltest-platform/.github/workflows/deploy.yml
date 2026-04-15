@@ -61,14 +61,5 @@ jobs:
         token: ${{ secrets.DO_TOKEN }}
         liveUrl: ${{ secrets.DO_LIVE_URL }}
 
-# Secrets to add in GitHub Repo Settings:
-# RAILWAY_TOKEN: Railway PAT
-# RAILWAY_BACKEND_SERVICE_ID: From railway service
-# DO_APP_ID: DigitalOcean App ID
-# DO_TOKEN: DigitalOcean PAT
-# DO_LIVE_URL: App live URL
 
-# Usage:
-# 1. Add secrets to repo
-# 2. Push to main → auto deploy!
 
