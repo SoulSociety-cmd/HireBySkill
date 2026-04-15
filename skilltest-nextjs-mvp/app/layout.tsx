@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { SessionProvider } from 'next-auth/react'
 import Link from 'next/link'
+import Providers from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
+        <Providers>
           <nav className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 border-b border-white/50 shadow-lg">
             <div className="max-w-6xl mx-auto px-6 py-4">
               <div className="flex items-center justify-between">
@@ -34,10 +34,11 @@ export default function RootLayout({
               </div>
             </div>
           </nav>
+
           <main className="min-h-[calc(100vh-80px)]">
             {children}
           </main>
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   )
