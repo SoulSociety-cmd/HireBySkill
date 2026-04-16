@@ -4,6 +4,7 @@
   "description": "SkillTest Platform - Connect companies with students through real skill tests",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon server.js",
     "client": "cd client && npx vite",
