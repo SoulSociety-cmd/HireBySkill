@@ -7,7 +7,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
 const { Server } = require('socket.io');
-const portfinder = require("portfinder"); // ✅ thêm dòng này
+const portfinder = require("portfinder"); 
 const { authLimiter, apiLimiter } = require('./middleware/rateLimit');
 
 // Models
@@ -33,7 +33,6 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authLimiter);
 app.use('/api', apiLimiter);
 
-// ===== MongoDB =====
 if (!process.env.MONGO_URI) {
   console.error('❌ Missing MONGO_URI environment variable');
   process.exit(1);
