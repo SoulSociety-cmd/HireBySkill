@@ -3,7 +3,8 @@
 **SkillTest Platform** là một nền tảng kết nối doanh nghiệp với sinh viên và các ứng viên mới ra trường thông qua các bài kiểm tra kỹ năng thực tế (code challenge + MCQ). Dự án có hệ thống auto-grading thông minh và dashboard cho cả sinh viên và doanh nghiệp.
 
 ---
-https://skilltest-platform.onrender.com/
+🔗 Live Demo: https://skilltest-platform.onrender.com/  
+
 ## 🚀 Features
 
 ### **Frontend**
